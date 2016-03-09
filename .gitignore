@@ -3,6 +3,9 @@ logs
 *.log
 npm-debug.log*
 
+#phpstorm
+.idea
+
 # Runtime data
 pids
 *.pid

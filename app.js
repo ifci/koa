@@ -1,3 +1,4 @@
+"use strict";
 /*const koa = require('koa');
 const app = new koa();
 
@@ -93,10 +94,51 @@ var Router = require('koa-router');
 
 var myRouter = new Router();
 
-myRouter.get('/', function *(next) {
+var render = require('koa-ejs');
+
+var path = require('path');
+
+var configs = require('./configs/configs');
+
+app.title = configs.name;
+
+render(app, {
+  root: path.join(__dirname, 'view'),
+  layout: 'template',
+  viewExt: 'html',
+  cache: false,
+  debug: true
+});
+
+app.use(function* (next) {
+  this.state = this.state || {};
+  this.state.now = new Date();
+  this.state.ip = this.ip;
+  this.state.title = app.title;
+  this.state.version = '2.0.0';
+  yield next;
+});
+
+app.use(function *() {
+  var users = [{name: 'Dead Horse'}, {name: 'Jack'}, {name: 'Tom'}];
+  yield this.render('content', {
+    users: users
+  });
+});
+
+/*myRouter.get('/', function *(next) {
   this.response.body = 'Hello World!';
 });
 
-app.use(myRouter.routes());
+app.use(myRouter.routes());*/
+
+// 错误处理机制
+app.use(function *() {
+  try {
+    yield saveResults();
+  } catch (err) {
+    this.throw(400, '数据无效');
+  }
+});
 
 app.listen(3001);
